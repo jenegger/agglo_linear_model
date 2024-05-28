@@ -43,19 +43,11 @@ for  epoch in range(num_epochs):
 	for i, (inputs,labels) in enumerate(dloader):
 		#forward and backward, update
 		output = model(inputs)
-		#print("this is the output")
-		#print(output)
-		#print("this is the label")
-		#print(labels)
 		l = loss(output,labels)
 		l.backward()
 		optimizer.step()
 		optimizer.zero_grad()
-		#print(l.item())
 		l_loss.append(l.item())
-		#if epoch  % 10 == 0:
-		#	print("loss = ",l.item())
-		#	l_loss.append(l.item())
 	
 plt.plot(l_loss)
 plt.show()

@@ -15,5 +15,3 @@ class TinyModel(torch.nn.Module):
 		x = self.linear2(x)
 		x = self.sigmoid(x)
 		return x
-
-#tinymodel = TinyModel()
