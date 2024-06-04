@@ -17,6 +17,10 @@ my_data = genfromtxt('data_stream_2121.txt', delimiter=',')
 #real data from 60Co source
 #my_data = genfromtxt('real_data_co60.txt', delimiter=',')
 my_data[:,4] = my_data[:,4]+4500  #this step is needed, I only want positive time values, so that I can use the time as a radius
+#THIS IS NOW TIME NORMALIZATION
+delta_time = np.max(my_data[:,4]) -np.min(my_data[:,4])
+min_time = np.min(my_data[:,4])
+my_data[:,4] = (my_data[:,4] - min_time)/delta_time
 
 # ### structure of mydata : eventnr, energy, theta, phi, hit-time
 
@@ -65,8 +69,10 @@ with open('file_well_reco_2clusters.txt', 'w') as f1:
     #1)select unique events
     array_unique_events = np.unique(my_data[:,0])
     #these were the best values for clustering with agglomerative model
-    distance_weight = 3640
-    time_weight = 2.5
+    #distance_weight = 3640 -> old good params
+    #time_weight = 2.5 -> old good params
+    distance_weight = 1
+    time_weight = 2.75
     #2)loop over those events (2 in a row)
     for i in range(0,(len(array_unique_events)-2),2):
     #3)if we have exactly two clusters, correctly clusterized-> get for both clusters there center of mass etc
@@ -136,8 +142,10 @@ with open('file_wrongly_reco_two_clusters.txt', 'w') as f2:
     #1)select unique events
     array_unique_events = np.unique(my_data[:,0])
     #these were the best values for clustering with agglomerative model
-    distance_weight = 3640
-    time_weight = 2.5
+    #distance_weight = 3640 -> old good params
+    #time_weight = 2.5 -> old good params
+    distance_weight = 1
+    time_weight = 2.75
     #2)loop over those events (2 in a row)
     for i in range(0,(len(array_unique_events)-1),1):
     #3)if we have exactly two clusters, correctly clusterized-> get for both clusters there center of mass etc

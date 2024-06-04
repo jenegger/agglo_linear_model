@@ -10,7 +10,8 @@ from matplotlib import pyplot as plt
 
 class CustomDataset(Dataset):
 	def __init__(self):
-		xy = np.loadtxt("combined_stuff_test.txt",delimiter=",",dtype=np.float32)
+		#xy = np.loadtxt("combined_stuff_test.txt",delimiter=",",dtype=np.float32)
+		xy = np.loadtxt("comb_events.txt",delimiter=",",dtype=np.float32)
 		self.x = torch.from_numpy(xy[:,:-1])
 		self.y = torch.from_numpy(xy[:,[-1]])
 		self.n_samples = xy.shape[0]
@@ -22,32 +23,28 @@ class CustomDataset(Dataset):
 model = TinyModel()
 #define loss,lr, etc...
 #learning_rate = 0.005 #old lr
-learning_rate = 3e-4
+learning_rate = 8e-5
 
 loss = nn.BCELoss()
-#optimizer = torch.optim.SGD(model.parameters(),lr= learning_rate) #old optimizer
-optimizer = torch.optim.Adam(model.parameters(),lr= learning_rate)
+optimizer = torch.optim.SGD(model.parameters(),lr= learning_rate) #old optimizer
+#optimizer = torch.optim.Adam(model.parameters(),lr= learning_rate)
 
 dataset = CustomDataset()
 batches = 64
 dloader = DataLoader(dataset,batch_size=batches,shuffle=True)
 dataiter= iter(dloader)
-data = dataiter.next()
+data = next(dataiter)
 features,labels= data
 print(features,labels)
 #training loop
-num_epochs = 50
+num_epochs = 100
 total_samples = len(dataset)
 n_iterations = math.ceil(total_samples/batches)
 print(total_samples)
 print(n_iterations)
 l_loss = []
 for  epoch in range(num_epochs):
-	learning_rate = learning_rate*0.5*(1+np.cos(np.pi*epoch/num_epochs))
-	optimizer = torch.optim.Adam(model.parameters(),lr= learning_rate)
-	d_loader = DataLoader(dataset,batch_size=batches,shuffle=True)
-	#for i, (inputs,labels) in enumerate(dloader):
-	for i, (inputs,labels) in enumerate(d_loader):
+	for i, (inputs,labels) in enumerate(dloader):
 		#forward and backward, update
 		output = model(inputs)
 		l = loss(output,labels)
@@ -58,5 +55,6 @@ for  epoch in range(num_epochs):
 plt.title("Loss functions")	
 plt.xlabel("Iterations")
 plt.ylabel("Loss")
+#plt.yscale('log')
 plt.plot(l_loss)
 plt.show()
