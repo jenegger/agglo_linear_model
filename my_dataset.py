@@ -21,12 +21,15 @@ class CustomDataset(Dataset):
 #define model
 model = TinyModel()
 #define loss,lr, etc...
-learning_rate = 0.01
+#learning_rate = 0.005 #old lr
+learning_rate = 3e-4
+
 loss = nn.BCELoss()
-optimizer = torch.optim.SGD(model.parameters(),lr= learning_rate)
+#optimizer = torch.optim.SGD(model.parameters(),lr= learning_rate) #old optimizer
+optimizer = torch.optim.Adam(model.parameters(),lr= learning_rate)
 
 dataset = CustomDataset()
-batches = 256
+batches = 64
 dloader = DataLoader(dataset,batch_size=batches,shuffle=True)
 dataiter= iter(dloader)
 data = dataiter.next()
@@ -40,14 +43,20 @@ print(total_samples)
 print(n_iterations)
 l_loss = []
 for  epoch in range(num_epochs):
-	for i, (inputs,labels) in enumerate(dloader):
+	learning_rate = learning_rate*0.5*(1+np.cos(np.pi*epoch/num_epochs))
+	optimizer = torch.optim.Adam(model.parameters(),lr= learning_rate)
+	d_loader = DataLoader(dataset,batch_size=batches,shuffle=True)
+	#for i, (inputs,labels) in enumerate(dloader):
+	for i, (inputs,labels) in enumerate(d_loader):
 		#forward and backward, update
 		output = model(inputs)
 		l = loss(output,labels)
 		l.backward()
 		optimizer.step()
-		optimizer.zero_grad()
+		#optimizer.zero_grad()
 		l_loss.append(l.item())
-	
+plt.title("Loss functions")	
+plt.xlabel("Iterations")
+plt.ylabel("Loss")
 plt.plot(l_loss)
 plt.show()
